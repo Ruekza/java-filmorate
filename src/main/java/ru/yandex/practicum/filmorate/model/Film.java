@@ -19,6 +19,6 @@ public class Film {
     private String description;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
-    @JsonFormat(shape=JsonFormat.Shape.NUMBER_INT)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
 }
