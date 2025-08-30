@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public class User {
     private Long id;
     @Email(message = "Почта должна быть корректной")
-    @NotBlank(message = "Почта не может быть пустой")
+    @NotBlank(message = "Почта не может быть пустой", groups = UserCreate.class)
     private String email;
     @NotBlank(message = "Логин не может быть пустым")
     @Pattern(regexp = "^[^ ]+$", message = "Логин не может содержать пробелы")
@@ -26,4 +26,5 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
+
 }

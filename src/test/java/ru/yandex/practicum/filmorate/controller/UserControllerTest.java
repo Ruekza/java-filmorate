@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserCreate;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -22,7 +23,7 @@ public class UserControllerTest {
     @Test
     void whenUserEmailIsNullThenEmailValidationIsFailed() {
         User user = new User(null, null, "login", "name", LocalDate.of(1980, 05, 11));
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        Set<ConstraintViolation<User>> violations = validator.validate(user, UserCreate.class);
         // Проверяем, что есть нарушение валидации
         Assertions.assertFalse(violations.isEmpty());
         Assertions.assertEquals(1, violations.size());
@@ -33,12 +34,12 @@ public class UserControllerTest {
     @Test
     void whenUserEmailIsEmptyThenEmailValidationIsFailed() {
         User user = new User(null, " ", "login", "name", LocalDate.of(1980, 05, 11));
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        Set<ConstraintViolation<User>> violations = validator.validate(user, UserCreate.class);
         Assertions.assertFalse(violations.isEmpty());
-        Assertions.assertEquals(2, violations.size());
+        Assertions.assertEquals(1, violations.size());
         for (ConstraintViolation<User> violation : violations) {
             String message = violation.getMessage();
-            Assertions.assertTrue(message.equals("Почта не может быть пустой") || message.equals("Почта должна быть корректной"));
+            Assertions.assertTrue(message.equals("Почта не может быть пустой"));
         }
     }
 
