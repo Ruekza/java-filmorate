@@ -11,6 +11,7 @@ import lombok.ToString;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
@@ -29,4 +30,5 @@ public class Film {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     @NotNull(message = "Продолжительность не может быть пустой")
     private Duration duration;
+    private Set<Long> likes; // список лайков, содержит id пользователей, поставивших лайк
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -92,13 +93,13 @@ public class FilmControllerTest {
     @Test
     void whenReleaseDateIsLessMinThrowException() { // дата фильма ранее 28.12.1895
         Film film = new Film(null, "film", "desc", LocalDate.of(1895, 12, 27), Duration.ofMinutes(180));
-        Assertions.assertThrows(ValidationException.class, () -> FilmController.validate(film));
+        Assertions.assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
     }
 
     @Test
     void whenReleaseDateIs28Dec1895ThenNoException() {
         Film film = new Film(null, "film", "desc", LocalDate.of(1895, 12, 28), Duration.ofMinutes(180));
-        Assertions.assertDoesNotThrow(() -> FilmController.validate(film), "Этот код не должен выбрасывать исключение");
+        Assertions.assertDoesNotThrow(() -> FilmValidator.validate(film), "Этот код не должен выбрасывать исключение");
     }
 
     @Test
@@ -114,7 +115,7 @@ public class FilmControllerTest {
     @Test
     void whenFilmDurationIsNegativeThenThrowException() {
         Film film = new Film(null, "film", "desc", LocalDate.of(2020, 05, 11), Duration.ofMinutes(-180));
-        Assertions.assertThrows(ValidationException.class, () -> FilmController.validate(film));
+        Assertions.assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
     }
 
 }

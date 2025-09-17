@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserCreate;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.validator.UserValidator;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -88,9 +90,11 @@ public class UserControllerTest {
     @Test
     void whenUserNameIsNullThenNoException() {
         User user = new User(null, "tom@cat.ru", "login", null, LocalDate.of(1980, 05, 11));
-        Assertions.assertDoesNotThrow(() -> UserController.validate(user), "Этот код не должен выбрасывать исключение");
-        UserController userController = new UserController();
-        User createdUser = userController.createUser(user);
+        Assertions.assertDoesNotThrow(() -> UserValidator.validate(user), "Этот код не должен выбрасывать исключение");
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        User createdUser = userStorage.addUser(user);
+//        UserController userController = new UserController();
+//        User createdUser = userController.createUser(user);
         Assertions.assertEquals("login", createdUser.getName());
     }
 
