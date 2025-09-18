@@ -43,7 +43,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.containsKey(newUser.getId())) {
             User oldUser = users.get(newUser.getId());
             String email = oldUser.getEmail();
-            if(emails.contains(newUser.getEmail())) {
+            if (emails.contains(newUser.getEmail())) {
                 throw new ValidationException("Электронная почта " + newUser.getEmail() + " уже зарегистрирована");
             } else {
                 oldUser.setEmail(newUser.getEmail());
