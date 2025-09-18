@@ -9,6 +9,8 @@ public interface FilmStorage {
 
     public Map<Long, Film> getFilms();
 
+    public List<Film> getSortedFilm(int size, int from);
+
     public Film addFilm(Film film);
 
     public void deleteFilm(Long id);

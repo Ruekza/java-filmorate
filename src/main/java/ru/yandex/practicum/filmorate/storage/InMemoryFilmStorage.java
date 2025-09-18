@@ -5,16 +5,26 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Getter
 public class InMemoryFilmStorage implements FilmStorage {
     private long generatorId = 0;
     protected final Map<Long, Film> films = new HashMap<>();
+
+    @Override
+    public List<Film> getSortedFilm(int size, int from) {
+        Comparator<Film> filmComparator = Comparator.comparing(
+                film -> Optional.ofNullable(film.getLikes()).orElse(Collections.emptySet()).size()
+        );
+        return films.values().stream()
+                .sorted(filmComparator.reversed())
+                .skip(from)
+                .limit(size)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public Film addFilm(Film film) {

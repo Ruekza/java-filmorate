@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -70,14 +69,7 @@ public class FilmService {
     }
 
     public List<Film> findPopularFilms(int size, int from) {
-        Comparator<Film> filmComparator = Comparator.comparing(
-                film -> Optional.ofNullable(film.getLikes()).orElse(Collections.emptySet()).size()
-        );
-        return filmStorage.getFilms().values().stream()
-                .sorted(filmComparator.reversed())
-                .skip(from)
-                .limit(size)
-                .collect(Collectors.toList());
+        return filmStorage.getSortedFilm(size, from);
     }
 
 }
