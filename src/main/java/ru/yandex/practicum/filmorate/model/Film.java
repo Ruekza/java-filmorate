@@ -1,23 +1,22 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class Film {
     private Long id;
     @NotBlank(message = "Имя не может быть пустым")
@@ -31,6 +30,8 @@ public class Film {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     @NotNull(message = "Продолжительность не может быть пустой")
     private Duration duration;
-    @JsonIgnore
+    //@JsonIgnore
     private Set<Long> likes; // список лайков, содержит id пользователей, поставивших лайк
+    private LinkedHashSet<Genre> genres; // список жанров
+    private Mpa mpa; // возрастной рейтинг
 }

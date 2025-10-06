@@ -1,116 +1,88 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.JdbcUserRepository;
+import ru.yandex.practicum.filmorate.storage.mappers.UserRowMapper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final JdbcUserRepository userRepository;
+    private final JdbcTemplate jdbc;
 
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public UserService(JdbcUserRepository userRepository, JdbcTemplate jdbc) {
+        this.userRepository = userRepository;
+        this.jdbc = jdbc;
     }
 
     public User addUser(User user) {
-        return userStorage.addUser(user);
+        return userRepository.addUser(user);
     }
 
     public void deleteUser(Long id) {
-        userStorage.deleteUser(id);
+        userRepository.deleteUser(id);
     }
 
     public User updateUser(User newUser) {
-        return userStorage.updateUser(newUser);
+        return userRepository.updateUser(newUser);
     }
 
     public List<User> getAllUsers() {
-        return userStorage.getAllUsers();
+        return userRepository.getAllUsers();
     }
 
     public User getUserById(Long id) {
-        return userStorage.getUserById(id);
+        return userRepository.getUserById(id);
     }
 
     public List<Long> addFriend(Long userId, Long anotherUserId) {
-        User user = getUserById(userId);
-        User anotherUser = getUserById(anotherUserId);
-        if (user.getFriends() == null) {
-            user.setFriends(new HashSet<>());
-            user.getFriends().add(anotherUserId);
-        }
-        if (anotherUser.getFriends() == null) {
-            anotherUser.setFriends(new HashSet<>());
-            anotherUser.getFriends().add(userId);
-        }
-        user.getFriends().add(anotherUserId);
-        anotherUser.getFriends().add(userId);
-        return new ArrayList<>(user.getFriends());
-    }
-
-
-    public void deleteFriend(Long userId, Long anotherUserId) {
-        User user = getUserById(userId);
-        User anotherUser = getUserById(anotherUserId);
-        if (user == null || anotherUser == null) {
+        String sql = "INSERT INTO friends(user1_id, user2_id) VALUES (?, ?)";
+        if (!userRepository.userExist(userId) || !userRepository.userExist(anotherUserId)) {
             throw new EntityNotFoundException("Пользователь с указанным id не найден");
         } else {
-            if (user.getFriends() == null || anotherUser.getFriends() == null) {
-                return;
-            } else {
-                user.getFriends().remove(anotherUserId);
-                anotherUser.getFriends().remove(userId);
-            }
+            jdbc.update(sql, userId, anotherUserId);
+            // дописать получение списка id друзей
+            return getFriendsId(userId);
+        }
+    }
+
+    public void deleteFriend(Long userId, Long anotherUserId) {
+        String sql = "DELETE FROM friends WHERE user1_id = ? AND user2_id = ?";
+        if (!userRepository.userExist(userId) || !userRepository.userExist(anotherUserId)) {
+            throw new EntityNotFoundException("Пользователь с указанным id не найден");
+        } else {
+            jdbc.update(sql, userId, anotherUserId);
         }
     }
 
     public List<User> getFriends(Long id) {
-        User user = userStorage.getUserById(id);
-        if (user == null) {
+        String sql = "SELECT * FROM users WHERE user_id IN(SELECT user2_id FROM friends WHERE user1_id = ?)";
+        if (!userRepository.userExist(id)) {
             throw new EntityNotFoundException("Пользователь с указанным id не найден");
+        } else {
+            return jdbc.query(sql, new UserRowMapper(), id);
         }
-        Set<Long> friendsId = user.getFriends();
-        if (friendsId == null) {
-            friendsId = new HashSet<>();
-            user.setFriends(friendsId);
-        }
-        List<User> friends = new ArrayList<>();
-        for (Long friendId : friendsId) {
-            User friend = userStorage.getUserById(friendId);
-            if (friend != null) {
-                friends.add(friend);
-            }
-        }
-        return friends;
     }
 
     public List<User> getCommonFriends(Long userId, Long anotherUserId) {
-        User user = getUserById(userId);
-        User anotherUser = getUserById(anotherUserId);
-        if (user == null || anotherUser == null) {
+        String sql = "SELECT * FROM users " +
+                "WHERE user_id IN (SELECT user2_id FROM friends WHERE user1_id = ? " +
+                "AND user2_id IN(SELECT user2_id FROM friends WHERE user1_id = ?))";
+        if (!userRepository.userExist(userId) || !userRepository.userExist(anotherUserId)) {
             throw new EntityNotFoundException("Пользователь с указанным id не найден");
+        } else {
+            return jdbc.query(sql, new UserRowMapper(), userId, anotherUserId);
         }
-        List<Long> commonFriendsId = new ArrayList<>(user.getFriends());
-        commonFriendsId.retainAll(anotherUser.getFriends());
-        if (commonFriendsId.isEmpty()) {
-            throw new NullPointerException("У вас нет общих друзей");
-        }
-        // Создаём список общих друзей в виде объектов User
-        List<User> commonFriends = new ArrayList<>();
-        for (Long friendId : commonFriendsId) {
-            User commonFriend = getUserById(friendId);
-            if (commonFriend != null) {
-                commonFriends.add(commonFriend);
-            }
-        }
-        return commonFriends;
     }
 
+    // Метод для получения списка id друзей
+    public List<Long> getFriendsId(Long userId) {
+        String sql = "SELECT user2_id FROM friends WHERE user1_id = ?";
+        return jdbc.queryForList(sql, Long.class, userId);
+    }
 }

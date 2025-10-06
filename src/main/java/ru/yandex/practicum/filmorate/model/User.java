@@ -3,10 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -15,6 +12,7 @@ import java.util.Set;
 @EqualsAndHashCode(of = {"id"})
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
     private Long id;
     @Email(message = "Почта должна быть корректной")
@@ -28,6 +26,8 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
-    @JsonIgnore
+    //    @JsonIgnore
     private Set<Long> friends; // список друзей, содержит id друзей
+    @JsonIgnore
+    private String status; // статус дружбы: подтвержденная или неподтвержденная
 }
