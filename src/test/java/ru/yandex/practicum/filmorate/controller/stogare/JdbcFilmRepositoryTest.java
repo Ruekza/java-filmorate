@@ -24,7 +24,7 @@ public class JdbcFilmRepositoryTest {
 
     @Test
     public void testAddFilm() {
-        Film film = new Film(null, "film1", "desc1", LocalDate.of(2001, 01, 01), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film1", "desc1", LocalDate.of(2001, 01, 01), Duration.ofMinutes(180), null, null);
         Mpa mpa = new Mpa();
         mpa.setId(1L);
         mpa.setName("G");
@@ -42,7 +42,7 @@ public class JdbcFilmRepositoryTest {
 
     @Test
     public void testGetFilmById() {
-        Film film = new Film(null, "film", "desc", LocalDate.of(1995, 12, 28), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film", "desc", LocalDate.of(1995, 12, 28), Duration.ofMinutes(180), null, null);
         Mpa mpa = new Mpa();
         mpa.setId(1L);
         mpa.setName("G");
@@ -55,7 +55,7 @@ public class JdbcFilmRepositoryTest {
 
     @Test
     public void testDeleteFilm() {
-        Film film = new Film(null, "film2", "desc2", LocalDate.of(2005, 12, 28), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film2", "desc2", LocalDate.of(2005, 12, 28), Duration.ofMinutes(180), null, null);
         Mpa mpa = new Mpa();
         mpa.setId(1L);
         mpa.setName("G");

@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 
 public class UserResultSetExtractor implements ResultSetExtractor<User> {
     @Override
@@ -21,11 +20,6 @@ public class UserResultSetExtractor implements ResultSetExtractor<User> {
                 user.setName(rs.getString("name"));
                 user.setBirthday(rs.getDate("birthday").toLocalDate());
             }
-            // Обработка друзей
-            if (user.getFriends() == null) {
-                user.setFriends(new HashSet<>());
-            }
-            user.getFriends().add(rs.getLong("user2_id"));
         }
         return user;
     }

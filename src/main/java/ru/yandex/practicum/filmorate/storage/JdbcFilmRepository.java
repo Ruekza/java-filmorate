@@ -103,12 +103,12 @@ public class JdbcFilmRepository implements FilmStorage {
 
     @Override
     public Film getFilmById(Long id) {
-        String sql = "SELECT f.*, m.mpa_id, mpa.name AS mpa_name, g.genre_id, genres.name AS genre_name, l.user_id FROM films AS f " +
+        String sql = "SELECT f.*, m.mpa_id, mpa.name AS mpa_name, g.genre_id, genres.name AS genre_name FROM films AS f " +
                 "JOIN films_mpa AS m ON f.film_id = m.film_id " +
                 "JOIN mpa ON m.mpa_id = mpa.mpa_id " +
                 "LEFT JOIN films_genres AS g ON f.film_id = g.film_id " +
                 "LEFT JOIN genres ON g.genre_id = genres.genre_id " +
-                "LEFT JOIN likes AS l ON f.film_id = l.film_id WHERE f.film_id = ?";
+                "WHERE f.film_id = ?";
         return jdbc.query(sql, new FilmResultSetExtractor(), id);
     }
 

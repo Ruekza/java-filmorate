@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class FilmResultSetExtractor implements ResultSetExtractor<Film> {
@@ -31,11 +30,6 @@ public class FilmResultSetExtractor implements ResultSetExtractor<Film> {
                 newMpa.setName(rs.getString("mpa_name"));
                 film.setMpa(newMpa);
             }
-            // Обрабока лайков
-            if (film.getLikes() == null) {
-                film.setLikes(new HashSet<>());
-            }
-            film.getLikes().add(rs.getLong("user_id"));
 
             // Обработка жанров
             if (film.getGenres() == null) {

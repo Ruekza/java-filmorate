@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
@@ -26,8 +24,5 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
-    //    @JsonIgnore
-    private Set<Long> friends; // список друзей, содержит id друзей
-    @JsonIgnore
-    private String status; // статус дружбы: подтвержденная или неподтвержденная
+
 }

@@ -22,7 +22,7 @@ public class JdbcUserRepositoryTest {
 
     @Test
     public void testAddUser() {
-        User user = new User(null, "tom@cat.ru", "xxx", "Olga", LocalDate.of(1987, 04, 01), null, null);
+        User user = new User(null, "tom@cat.ru", "xxx", "Olga", LocalDate.of(1987, 04, 01));
         User createdUser = userRepository.addUser(user);
         User gotUser = userRepository.getUserById(createdUser.getId());
         Assertions.assertNotNull(createdUser);
@@ -31,13 +31,11 @@ public class JdbcUserRepositoryTest {
         Assertions.assertEquals("xxx", createdUser.getLogin());
         Assertions.assertEquals("Olga", createdUser.getName());
         Assertions.assertEquals(LocalDate.of(1987, 04, 01), createdUser.getBirthday());
-        Assertions.assertNull(createdUser.getFriends());
-        Assertions.assertNull(createdUser.getStatus());
     }
 
     @Test
     public void testGetUserById() {
-        User user = new User(null, "pochta@mail.ru", "yyy", "Anna", LocalDate.of(1986, 06, 30), null, null);
+        User user = new User(null, "pochta@mail.ru", "yyy", "Anna", LocalDate.of(1986, 06, 30));
         User createdUser = userRepository.addUser(user);
         User gotUser = userRepository.getUserById(createdUser.getId());
         Assertions.assertNotNull(gotUser);
@@ -46,7 +44,7 @@ public class JdbcUserRepositoryTest {
 
     @Test
     public void testDeleteUser() {
-        User user = new User(null, "ttt@mail.ru", "mmm", "Max", LocalDate.of(1995, 07, 30), null, null);
+        User user = new User(null, "ttt@mail.ru", "mmm", "Max", LocalDate.of(1995, 07, 30));
         User createdUser = userRepository.addUser(user);
         User gotUser = userRepository.getUserById(createdUser.getId());
         Assertions.assertNotNull(gotUser);

@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class UserListExtractor implements ResultSetExtractor<List<User>> {
@@ -25,16 +24,12 @@ public class UserListExtractor implements ResultSetExtractor<List<User>> {
                 }
                 currentUserId = userId;
                 currentUser = new User();
-
                 currentUser.setId(rs.getLong("user_id"));
                 currentUser.setEmail(rs.getString("email"));
                 currentUser.setLogin(rs.getString("login"));
                 currentUser.setName(rs.getString("name"));
                 currentUser.setBirthday(rs.getDate("birthday").toLocalDate());
-
-                currentUser.setFriends(new HashSet<>());
             }
-            currentUser.getFriends().add(rs.getLong("user2_id"));
         }
         if (currentUser != null) {
             users.add(currentUser);

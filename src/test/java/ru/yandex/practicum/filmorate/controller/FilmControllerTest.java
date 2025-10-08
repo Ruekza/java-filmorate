@@ -24,7 +24,7 @@ public class FilmControllerTest {
 
     @Test
     void whenFilmNameIsNullThenNameValidationIsFailed() {
-        Film film = new Film(1L, null, "desc", LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(1L, null, "desc", LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         // Проверяем, что есть нарушение валидации
         Assertions.assertFalse(violations.isEmpty());
@@ -35,7 +35,7 @@ public class FilmControllerTest {
 
     @Test
     void whenFilmNameIsEmptyThenNameValidationIsFailed() {
-        Film film = new Film(null, "", "desc", LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "", "desc", LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         Assertions.assertFalse(violations.isEmpty());
         Assertions.assertEquals(1, violations.size());
@@ -45,7 +45,7 @@ public class FilmControllerTest {
 
     @Test
     void whenFilmDescriptionIs201ThenDescriptionValidationIsFailed() {
-        Film film = new Film(null, "film", new String(new char[201]).replace('\0', 't'), LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film", new String(new char[201]).replace('\0', 't'), LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         Assertions.assertFalse(violations.isEmpty());
         Assertions.assertEquals(1, violations.size());
@@ -55,14 +55,14 @@ public class FilmControllerTest {
 
     @Test
     void whenFilmDescriptionIs200ThenDescriptionValidationIsPassed() {
-        Film film = new Film(null, "film", new String(new char[200]).replace('\0', 't'), LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film", new String(new char[200]).replace('\0', 't'), LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         Assertions.assertTrue(violations.isEmpty());
     }
 
     @Test
     void whenFilmDescriptionIsNullThenDescriptionValidationIsFailed() {
-        Film film = new Film(null, "film", null, LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film", null, LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         Assertions.assertFalse(violations.isEmpty());
         Assertions.assertEquals(1, violations.size());
@@ -72,7 +72,7 @@ public class FilmControllerTest {
 
     @Test
     void whenFilmDescriptionIsEmptyThenDescriptionValidationIsFailed() {
-        Film film = new Film(null, "film", " ", LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film", " ", LocalDate.of(2020, 05, 11), Duration.ofMinutes(180), null, null);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         Assertions.assertFalse(violations.isEmpty());
         Assertions.assertEquals(1, violations.size());
@@ -82,7 +82,7 @@ public class FilmControllerTest {
 
     @Test
     void whenReleaseDateIsNullThenDateValidationIsFailed() {
-        Film film = new Film(null, "film", "desc", null, Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film", "desc", null, Duration.ofMinutes(180), null, null);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         Assertions.assertFalse(violations.isEmpty());
         Assertions.assertEquals(1, violations.size());
@@ -92,19 +92,19 @@ public class FilmControllerTest {
 
     @Test
     void whenReleaseDateIsLessMinThrowException() { // дата фильма ранее 28.12.1895
-        Film film = new Film(null, "film", "desc", LocalDate.of(1895, 12, 27), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film", "desc", LocalDate.of(1895, 12, 27), Duration.ofMinutes(180), null, null);
         Assertions.assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
     }
 
     @Test
     void whenReleaseDateIs28Dec1895ThenNoException() {
-        Film film = new Film(null, "film", "desc", LocalDate.of(1895, 12, 28), Duration.ofMinutes(180), null, null, null);
+        Film film = new Film(null, "film", "desc", LocalDate.of(1895, 12, 28), Duration.ofMinutes(180), null, null);
         Assertions.assertDoesNotThrow(() -> FilmValidator.validate(film), "Этот код не должен выбрасывать исключение");
     }
 
     @Test
     void whenFilmDurationIsNullThenDurationValidationIsFailed() {
-        Film film = new Film(null, "film", "desc", LocalDate.of(2000, 12, 28), null, null, null, null);
+        Film film = new Film(null, "film", "desc", LocalDate.of(2000, 12, 28), null, null, null);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         Assertions.assertFalse(violations.isEmpty());
         Assertions.assertEquals(1, violations.size());
@@ -114,7 +114,7 @@ public class FilmControllerTest {
 
     @Test
     void whenFilmDurationIsNegativeThenThrowException() {
-        Film film = new Film(null, "film", "desc", LocalDate.of(2020, 05, 11), Duration.ofMinutes(-180), null, null, null);
+        Film film = new Film(null, "film", "desc", LocalDate.of(2020, 05, 11), Duration.ofMinutes(-180), null, null);
         Assertions.assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
     }
 

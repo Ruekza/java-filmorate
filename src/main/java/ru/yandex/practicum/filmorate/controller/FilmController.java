@@ -87,4 +87,5 @@ public class FilmController {
     public Map<String, String> handleNotFound(EntityNotFoundException e) {
         return Map.of("описание ошибки", e.getMessage());
     }
+
 }

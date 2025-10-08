@@ -1,16 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.JdbcFilmRepository;
-import ru.yandex.practicum.filmorate.storage.JdbcUserRepository;
-import ru.yandex.practicum.filmorate.storage.mappers.GenreRowMapper;
-import ru.yandex.practicum.filmorate.storage.mappers.MpaRowMapper;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.util.*;
 
@@ -19,13 +14,17 @@ import java.util.*;
 public class FilmService {
     private final JdbcFilmRepository filmRepository;
     private final JdbcUserRepository userRepository;
-    private final JdbcTemplate jdbc;
+    private final JdbcLikeRepository likeRepository;
+    private final JdbcGenreRepository genreRepository;
+    private final JdbcMpaRepository mpaRepository;
 
     @Autowired
-    public FilmService(JdbcFilmRepository filmRepository, JdbcUserRepository userRepository, JdbcTemplate jdbc) {
+    public FilmService(JdbcFilmRepository filmRepository, JdbcUserRepository userRepository, JdbcLikeRepository likeRepository, JdbcGenreRepository genreRepository, JdbcMpaRepository mpaRepository) {
         this.filmRepository = filmRepository;
         this.userRepository = userRepository;
-        this.jdbc = jdbc;
+        this.likeRepository = likeRepository;
+        this.genreRepository = genreRepository;
+        this.mpaRepository = mpaRepository;
     }
 
     public Film addFilm(Film film) {
@@ -49,59 +48,31 @@ public class FilmService {
     }
 
     public void addLike(Long userId, Long filmId) { // убрали Set<Long>
-        if (!userRepository.userExist(userId)) {
-            throw new EntityNotFoundException("Пользователь с указанным ID не найден");
-        }
-        if (!filmRepository.filmExist(filmId)) {
-            throw new EntityNotFoundException("Фильм с указанным ID не найден");
-        }
-        String sql = "INSERT INTO likes(user_id, film_id) VALUES (?, ?)";
-        jdbc.update(sql, userId, filmId);
+        likeRepository.addLike(userId, filmId);
     }
 
     public void deleteLike(Long userId, Long filmId) {
-        if (!userRepository.userExist(userId)) {
-            throw new EntityNotFoundException("Пользователь с указанным ID не найден");
-        }
-        if (!filmRepository.filmExist(filmId)) {
-            throw new EntityNotFoundException("Фильм с указанным ID не найден");
-        }
-        String sql = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
-        jdbc.update(sql, userId, filmId);
+        likeRepository.deleteLike(userId, filmId);
     }
 
     public List<Film> findPopularFilms(int size, int from) {
         return filmRepository.getSortedFilm(size, from);
     }
 
-    // Метод для получения списка всех жанров
     public List<Genre> getGenres() {
-        String sql = "SELECT * FROM genres";
-        return jdbc.query(sql, new GenreRowMapper());
+        return genreRepository.getGenres();
     }
 
-    // Метод для получения жанра по id
     public Genre getGenreById(Long id) {
-        String sql = "SELECT * FROM genres WHERE genre_id = ?";
-        if (!filmRepository.genreExist(id)) {
-            throw new EntityNotFoundException("Жанр с указанным id не найден");
-        }
-        return jdbc.queryForObject(sql, new GenreRowMapper(), id);
+        return genreRepository.getGenreById(id);
     }
 
-    // Метод для получения списка всех рейтингов
     public List<Mpa> getMpa() {
-        String sql = "SELECT * FROM mpa";
-        return jdbc.query(sql, new MpaRowMapper());
+        return mpaRepository.getMpa();
     }
 
-    // Метод для получения рейтинга по id
     public Mpa getMpaById(Long id) {
-        String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
-        if (!filmRepository.mpaExist(id)) {
-            throw new EntityNotFoundException("Рейтинг с указанным id не найден");
-        }
-        return jdbc.queryForObject(sql, new MpaRowMapper(), id);
+        return mpaRepository.getMpaById(id);
     }
 
 }

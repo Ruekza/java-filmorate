@@ -13,17 +13,11 @@ import ru.yandex.practicum.filmorate.storage.mappers.UserResultSetExtractor;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
 public class JdbcUserRepository implements UserStorage {
     private final JdbcTemplate jdbc;
-
-    @Override
-    public Map<Long, User> getUsers() {
-        return Map.of();
-    }
 
     @Override
     public User addUser(User user) {
