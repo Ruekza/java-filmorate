@@ -1,116 +1,57 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.JdbcFriendRepository;
+import ru.yandex.practicum.filmorate.storage.JdbcUserRepository;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final JdbcUserRepository userRepository;
+    private final JdbcFriendRepository friendRepository;
 
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public UserService(JdbcUserRepository userRepository, JdbcFriendRepository friendRepository) {
+        this.userRepository = userRepository;
+        this.friendRepository = friendRepository;
     }
 
     public User addUser(User user) {
-        return userStorage.addUser(user);
+        return userRepository.addUser(user);
     }
 
     public void deleteUser(Long id) {
-        userStorage.deleteUser(id);
+        userRepository.deleteUser(id);
     }
 
     public User updateUser(User newUser) {
-        return userStorage.updateUser(newUser);
+        return userRepository.updateUser(newUser);
     }
 
     public List<User> getAllUsers() {
-        return userStorage.getAllUsers();
+        return userRepository.getAllUsers();
     }
 
     public User getUserById(Long id) {
-        return userStorage.getUserById(id);
+        return userRepository.getUserById(id);
     }
 
     public List<Long> addFriend(Long userId, Long anotherUserId) {
-        User user = getUserById(userId);
-        User anotherUser = getUserById(anotherUserId);
-        if (user.getFriends() == null) {
-            user.setFriends(new HashSet<>());
-            user.getFriends().add(anotherUserId);
-        }
-        if (anotherUser.getFriends() == null) {
-            anotherUser.setFriends(new HashSet<>());
-            anotherUser.getFriends().add(userId);
-        }
-        user.getFriends().add(anotherUserId);
-        anotherUser.getFriends().add(userId);
-        return new ArrayList<>(user.getFriends());
+        return friendRepository.addFriend(userId, anotherUserId);
     }
 
-
     public void deleteFriend(Long userId, Long anotherUserId) {
-        User user = getUserById(userId);
-        User anotherUser = getUserById(anotherUserId);
-        if (user == null || anotherUser == null) {
-            throw new EntityNotFoundException("Пользователь с указанным id не найден");
-        } else {
-            if (user.getFriends() == null || anotherUser.getFriends() == null) {
-                return;
-            } else {
-                user.getFriends().remove(anotherUserId);
-                anotherUser.getFriends().remove(userId);
-            }
-        }
+        friendRepository.deleteFriend(userId, anotherUserId);
     }
 
     public List<User> getFriends(Long id) {
-        User user = userStorage.getUserById(id);
-        if (user == null) {
-            throw new EntityNotFoundException("Пользователь с указанным id не найден");
-        }
-        Set<Long> friendsId = user.getFriends();
-        if (friendsId == null) {
-            friendsId = new HashSet<>();
-            user.setFriends(friendsId);
-        }
-        List<User> friends = new ArrayList<>();
-        for (Long friendId : friendsId) {
-            User friend = userStorage.getUserById(friendId);
-            if (friend != null) {
-                friends.add(friend);
-            }
-        }
-        return friends;
+        return friendRepository.getFriends(id);
     }
 
     public List<User> getCommonFriends(Long userId, Long anotherUserId) {
-        User user = getUserById(userId);
-        User anotherUser = getUserById(anotherUserId);
-        if (user == null || anotherUser == null) {
-            throw new EntityNotFoundException("Пользователь с указанным id не найден");
-        }
-        List<Long> commonFriendsId = new ArrayList<>(user.getFriends());
-        commonFriendsId.retainAll(anotherUser.getFriends());
-        if (commonFriendsId.isEmpty()) {
-            throw new NullPointerException("У вас нет общих друзей");
-        }
-        // Создаём список общих друзей в виде объектов User
-        List<User> commonFriends = new ArrayList<>();
-        for (Long friendId : commonFriendsId) {
-            User commonFriend = getUserById(friendId);
-            if (commonFriend != null) {
-                commonFriends.add(commonFriend);
-            }
-        }
-        return commonFriends;
+        return friendRepository.getCommonFriends(userId, anotherUserId);
     }
 
 }

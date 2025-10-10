@@ -2,74 +2,77 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.util.*;
 
 
 @Service
 public class FilmService {
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final JdbcFilmRepository filmRepository;
+    private final JdbcUserRepository userRepository;
+    private final JdbcLikeRepository likeRepository;
+    private final JdbcGenreRepository genreRepository;
+    private final JdbcMpaRepository mpaRepository;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
+    public FilmService(JdbcFilmRepository filmRepository, JdbcUserRepository userRepository, JdbcLikeRepository likeRepository, JdbcGenreRepository genreRepository, JdbcMpaRepository mpaRepository) {
+        this.filmRepository = filmRepository;
+        this.userRepository = userRepository;
+        this.likeRepository = likeRepository;
+        this.genreRepository = genreRepository;
+        this.mpaRepository = mpaRepository;
     }
 
     public Film addFilm(Film film) {
-        return filmStorage.addFilm(film);
+        return filmRepository.addFilm(film);
     }
 
     public void deleteFilm(Long id) {
-        filmStorage.deleteFilm(id);
+        filmRepository.deleteFilm(id);
     }
 
     public Film updateFilm(Film newFilm) {
-        return filmStorage.updateFilm(newFilm);
+        return filmRepository.updateFilm(newFilm);
     }
 
     public List<Film> getAllFilms() {
-        return filmStorage.getAllFilms();
+        return filmRepository.getAllFilms();
     }
 
     public Film getFilmById(Long id) {
-        return filmStorage.getFilmById(id);
+        return filmRepository.getFilmById(id);
     }
 
-    public Set<Long> addLike(Long userId, Long filmId) {
-        if (userStorage.getUserById(userId) == null) {
-            throw new EntityNotFoundException("Пользователь с указанным ID не найден");
-        }
-        Film film = filmStorage.getFilms().get(filmId);
-        if (film == null) {
-            throw new EntityNotFoundException("Фильм с указанным ID не найден");
-        }
-        if (film.getLikes() == null) {
-            film.setLikes(new HashSet<>());
-            film.getLikes().add(userId);
-        }
-        film.getLikes().add(userId);
-        return film.getLikes();
+    public void addLike(Long userId, Long filmId) { // убрали Set<Long>
+        likeRepository.addLike(userId, filmId);
     }
 
     public void deleteLike(Long userId, Long filmId) {
-        if (userStorage.getUserById(userId) == null) {
-            throw new EntityNotFoundException("Пользователь с указанным ID не найден");
-        }
-        Film film = filmStorage.getFilms().get(filmId);
-        if (film == null) {
-            throw new EntityNotFoundException("Фильм с указанным ID не найден");
-        }
-        film.getLikes().remove(userId);
+        likeRepository.deleteLike(userId, filmId);
     }
 
     public List<Film> findPopularFilms(int size, int from) {
-        return filmStorage.getSortedFilm(size, from);
+        return filmRepository.getSortedFilm(size, from);
+    }
+
+    public List<Genre> getGenres() {
+        return genreRepository.getGenres();
+    }
+
+    public Genre getGenreById(Long id) {
+        return genreRepository.getGenreById(id);
+    }
+
+    public List<Mpa> getMpa() {
+        return mpaRepository.getMpa();
+    }
+
+    public Mpa getMpaById(Long id) {
+        return mpaRepository.getMpaById(id);
     }
 
 }

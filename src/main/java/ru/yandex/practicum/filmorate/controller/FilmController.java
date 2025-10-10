@@ -45,7 +45,7 @@ public class FilmController {
     }
 
     @GetMapping("/{filmId}")
-    public Film getFilmBiId(@PathVariable Long filmId) {
+    public Film getFilmById(@PathVariable Long filmId) {
         log.info("Получаем фильм по id = {}", filmId);
         return filmService.getFilmById(filmId);
     }
@@ -67,7 +67,13 @@ public class FilmController {
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         log.info("Выводим список {} популярных фильмов", count);
-        return filmService.findPopularFilms(count, 0);
+        return filmService.findPopularFilms(count, 1);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteFilm(@PathVariable Long id) {
+        log.info("Удаляем фильм с id = {}", id);
+        filmService.deleteFilm(id);
     }
 
     @ExceptionHandler
@@ -81,4 +87,5 @@ public class FilmController {
     public Map<String, String> handleNotFound(EntityNotFoundException e) {
         return Map.of("описание ошибки", e.getMessage());
     }
+
 }
